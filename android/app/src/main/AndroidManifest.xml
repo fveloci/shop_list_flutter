@@ -2,7 +2,7 @@
     package="com.example.shop_list">
    <application
         android:label="shop_list"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

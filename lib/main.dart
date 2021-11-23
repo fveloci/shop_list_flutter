@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shop_list/main_screens/homeScreen.dart';
+import 'package:shop_list/main_screens/login/login_screen.dart';
+import 'package:shop_list/utils/assetsImages.dart';
+import 'package:shop_list/utils/constantsApp.dart';
+import 'package:splash_screen_view/SplashScreenView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +25,7 @@ class MyApp extends StatelessWidget {
           primaryColorLight: Color(0xffff69a4),
           colorScheme: theme.colorScheme.copyWith(secondary: Color(0xffbee9ff)),
           visualDensity: VisualDensity.adaptivePlatformDensity),
-      home: Container(),
+      home: LoginScreen(),
     );
   }
 }
@@ -35,6 +40,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return SplashScreenView(
+        navigateRoute: LoginScreen(),
+        duration: 3,
+        imageSize: 50,
+        imageSrc: "assets/images/ic_launcher.png");
   }
 }
