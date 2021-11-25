@@ -1,5 +1,17 @@
+import 'dart:developer';
+import 'dart:ui';
+
+import 'package:auth_buttons/auth_buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_list/main_screens/homeScreen.dart';
+import 'package:shop_list/main_screens/login/sign_up.dart';
+import 'package:shop_list/utils/login_service.dart';
 import 'package:shop_list/utils/textApp.dart';
+import 'package:shop_list/widgets/components/buttons/login_button.dart';
+import 'package:shop_list/widgets/components/buttons/my_back_button.dart';
+import 'package:shop_list/widgets/components/buttons/sign_up_label.dart';
+import 'package:shop_list/widgets/components/containers/container_shape01.dart';
+import 'package:shop_list/widgets/components/fields/field_form.dart';
 import 'package:shop_list/widgets/design/design_widgets.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,79 +21,114 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-Widget _loginButton(BuildContext context) {
-  return Container(
-    padding: EdgeInsets.only(top: 50.0, bottom: 25),
-    width: double.infinity,
-    child: ElevatedButton(
-      onPressed: () => print('Boton iniciar sesion'),
-      style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.white),
-          elevation: MaterialStateProperty.all(5.0),
-          padding: MaterialStateProperty.all(EdgeInsets.all(15)),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0)))),
-      child: Text(
-        TextApp.LOGIN,
-        style: TextStyle(
-            color: Theme.of(context).primaryColor,
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold),
-      ),
-    ),
-  );
-}
-
-Widget _signUpButton(BuildContext context) {
-  return Container(
-    width: double.infinity,
-    child: TextButton(
-      onPressed: () => print('Boton registrarse'),
-      style: ButtonStyle(
-          padding: MaterialStateProperty.all(EdgeInsets.all(15)),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              side: BorderSide(
-                  color: Theme.of(context).primaryColorLight,
-                  width: 3,
-                  style: BorderStyle.solid),
-              borderRadius: BorderRadius.circular(5.0)))),
-      child: Text(
-        TextApp.SIGNUP,
-        style: TextStyle(
-            color: Colors.white,
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold),
-      ),
-    ),
-  );
-}
-
 class _LoginScreenState extends State<LoginScreen> {
+  Widget _emailPasswordWidget() {
+    return Column(
+      children: [
+        FieldForm(title: TextApp.EMAIL_ID),
+        FieldForm(title: TextApp.PASSWORD, isPassword: true)
+      ],
+    );
+  }
+
+  Widget _forgottenPassword() {
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        alignment: Alignment.centerRight,
+        child: Text(TextApp.FORGOT_PASSWORD,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)));
+  }
+
+  Widget divider() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+              child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Divider(
+              thickness: 1,
+            ),
+          )),
+          Text(TextApp.OR),
+          Expanded(
+              child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Divider(
+              thickness: 1,
+            ),
+          ))
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Container(
+          body: Stack(
+        children: [
+          Container(
+            height: double.infinity,
+            width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-                gradient: DesignWidgets.linearGradientMain(context)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DesignWidgets.customTitle(),
-                _loginButton(context),
-                _signUpButton(context)
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: height * .15),
+                    child: DesignWidgets.customDarkTitle(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: height * .05),
+                    child: _emailPasswordWidget(),
+                  ),
+                  LoginButton(
+                      text: TextApp.LOGIN,
+                      colorButtonBackground: Theme.of(context).primaryColor,
+                      colorText: Colors.white,
+                      widgetToNavigate: HomeScreen()),
+                  _forgottenPassword(),
+                  divider(),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(top: 10, bottom: 10),
+                    child: GoogleAuthButton(
+                      onPressed: () {
+                        LoginService().signInWithGoogle().then((result) => {
+                              if (result != null)
+                                {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => HomeScreen()))
+                                }
+                              else
+                                {log("loginScreen build() ERROR")}
+                            });
+                      },
+                      darkMode: false,
+                      text: TextApp.GOOGLE_SIGN,
+                    ),
+                  ),
+                  SignUpLabel(
+                    firstText: TextApp.DONT_HAVE_ACCOUNT,
+                    secondText: TextApp.SIGNUP,
+                    secondTextColor: Theme.of(context).primaryColorDark,
+                    widgetToNavigate: SignUp(),
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-      ),
+          ContainerShape01(),
+          Positioned(
+            top: height * .025,
+            child: MyBackButton(),
+          ),
+        ],
+      )),
     );
   }
 }
